@@ -1,0 +1,30 @@
+# Prometheus 配置文件
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  # video-rpc 服务监控
+  - job_name: 'video-rpc'
+    static_configs:
+      - targets: ['host.docker.internal:9081']
+        labels:
+          service: 'video-rpc'
+          env: 'dev'
+
+  # hotrank-rpc 服务监控
+  - job_name: 'hotrank-rpc'
+    static_configs:
+      - targets: ['host.docker.internal:9082']
+        labels:
+          service: 'hotrank-rpc'
+          env: 'dev'
+
+  # creative-api 服务监控
+  - job_name: 'creative-api'
+    static_configs:
+      - targets: ['host.docker.internal:9091']
+        labels:
+          service: 'creative-api'
+          env: 'dev'
+

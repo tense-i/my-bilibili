@@ -1,0 +1,123 @@
+version: '3.8'
+
+services:
+  # MySQL 数据库
+  mysql:
+    image: mysql:8.0
+    container_name: mybilibili-mysql
+    restart: always
+    ports:
+      - "33060:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root123456
+      MYSQL_DATABASE: mybilibili
+      TZ: Asia/Shanghai
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+      - ./sql:/docker-entrypoint-initdb.d
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-authentication-plugin=mysql_native_password
+    networks:
+      - mybilibili-net
+
+  # Redis 缓存
+  redis:
+    image: redis:7-alpine
+    container_name: mybilibili-redis
+    restart: always
+    ports:
+      - "63790:6379"
+    command: redis-server --requirepass redis123456 --appendonly yes
+    volumes:
+      - ./data/redis:/data
+    networks:
+      - mybilibili-net
+
+  # etcd 服务发现
+  etcd:
+    image: quay.io/coreos/etcd:v3.5.9
+    container_name: mybilibili-etcd
+    restart: always
+    ports:
+      - "23790:2379"
+      - "23800:2380"
+    environment:
+      - ETCD_NAME=etcd0
+      - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379
+      - ETCD_ADVERTISE_CLIENT_URLS=http://0.0.0.0:2379
+      - ETCD_LISTEN_PEER_URLS=http://0.0.0.0:2380
+      - ETCD_INITIAL_ADVERTISE_PEER_URLS=http://0.0.0.0:2380
+      - ETCD_INITIAL_CLUSTER=etcd0=http://0.0.0.0:2380
+      - ETCD_INITIAL_CLUSTER_STATE=new
+      - ETCD_INITIAL_CLUSTER_TOKEN=etcd-cluster
+    volumes:
+      - ./data/etcd:/etcd-data
+    command:
+      - /usr/local/bin/etcd
+      - --data-dir=/etcd-data
+    networks:
+      - mybilibili-net
+
+  # Jaeger 链路追踪
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: mybilibili-jaeger
+    restart: always
+    ports:
+      - "5775:5775/udp"
+      - "6831:6831/udp"
+      - "6832:6832/udp"
+      - "5778:5778"
+      - "16686:16686"  # Web UI
+      - "14268:14268"  # Collector HTTP
+      - "14250:14250"  # Collector gRPC
+      - "9411:9411"    # Zipkin compatible endpoint
+    environment:
+      - COLLECTOR_ZIPKIN_HOST_PORT=:9411
+      - COLLECTOR_OTLP_ENABLED=true
+    networks:
+      - mybilibili-net
+
+  # Prometheus 监控
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: mybilibili-prometheus
+    restart: always
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./data/prometheus:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    networks:
+      - mybilibili-net
+
+  # Grafana 可视化
+  grafana:
+    image: grafana/grafana:latest
+    container_name: mybilibili-grafana
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin123456
+    volumes:
+      - ./data/grafana:/var/lib/grafana
+    networks:
+      - mybilibili-net
+
+networks:
+  mybilibili-net:
+    driver: bridge
+
+volumes:
+  mysql-data:
+  redis-data:
+  etcd-data:
+  prometheus-data:
+  grafana-data:
+
