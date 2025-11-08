@@ -1,0 +1,89 @@
+Name: recall.rpc
+Mode: dev
+ListenOn: 127.0.0.1:9006
+
+# etcd 服务注册
+Etcd:
+  Hosts:
+    - 127.0.0.1:23790
+  Key: recall.rpc
+
+# Prometheus 监控
+Prometheus:
+  Host: 127.0.0.1
+  Port: 9096
+  Path: /metrics
+
+# Redis 配置
+CacheRedis:
+  - Host: 127.0.0.1:63790
+    Pass: redis123456
+    Type: node
+
+# MySQL 配置（视频索引）
+MySQL:
+  DataSource: root:root123456@tcp(127.0.0.1:33060)/mybilibili?charset=utf8mb4&parseTime=true&loc=Local
+
+# 召回策略配置
+RecallStrategies:
+  HotRecall:
+    Enable: true
+    Limit: 200
+    TopN: 0
+    LimitPerItem: 0
+    LimitPerTag: 0
+    LimitPerUP: 0
+    Priority: 10
+    RedisKey: "recall:hot:default"
+    RedisKeyTemplate: ""
+    
+  SelectionRecall:
+    Enable: true
+    Limit: 100
+    TopN: 0
+    LimitPerItem: 0
+    LimitPerTag: 0
+    LimitPerUP: 0
+    Priority: 10000
+    RedisKey: "recall:selection"
+    RedisKeyTemplate: ""
+    
+  LikeI2IRecall:
+    Enable: true
+    Limit: 0
+    TopN: 10
+    LimitPerItem: 40
+    LimitPerTag: 0
+    LimitPerUP: 0
+    Priority: 10000
+    RedisKey: ""
+    RedisKeyTemplate: "recall:i2i:%d"
+    
+  TagRecall:
+    Enable: true
+    Limit: 0
+    TopN: 10
+    LimitPerItem: 0
+    LimitPerTag: 20
+    LimitPerUP: 0
+    Priority: 1000
+    RedisKey: ""
+    RedisKeyTemplate: "recall:tag:%d"
+    
+  FollowRecall:
+    Enable: true
+    Limit: 0
+    TopN: 10
+    LimitPerItem: 0
+    LimitPerTag: 0
+    LimitPerUP: 40
+    Priority: 1000
+    RedisKey: ""
+    RedisKeyTemplate: "recall:up:%d"
+
+# 布隆过滤器配置
+BloomFilter:
+  ExpectedInsertions: 10000
+  FalsePositiveRate: 0.01
+  RedisKeyTemplate: "bloomfilter:%d:%s"
+
