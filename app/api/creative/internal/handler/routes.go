@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	hotrank "mybilibili/app/api/creative/internal/handler/hotrank"
+	recommend "mybilibili/app/api/creative/internal/handler/recommend"
 	video "mybilibili/app/api/creative/internal/handler/video"
 	"mybilibili/app/api/creative/internal/svc"
 
@@ -27,6 +28,18 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Method:  http.MethodGet,
 				Path:    "/hotrank/region",
 				Handler: hotrank.GetRegionHotRankListHandler(serverCtx),
+			},
+		},
+		rest.WithPrefix("/api/creative/v1"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				// 获取推荐列表
+				Method:  http.MethodGet,
+				Path:    "/recommend/list",
+				Handler: recommend.GetRecommendListHandler(serverCtx),
 			},
 		},
 		rest.WithPrefix("/api/creative/v1"),

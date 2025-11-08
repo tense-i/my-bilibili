@@ -1,3 +1,37 @@
 Name: creative
 Host: 0.0.0.0
 Port: 8888
+
+Mode: dev
+
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9091
+  Path: /metrics
+
+# Video RPC 配置
+VideoRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: video.rpc
+  Timeout: 10000
+  NonBlock: true
+
+# Hotrank RPC 配置
+HotrankRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: hotrank.rpc
+  Timeout: 10000
+  NonBlock: true
+
+# Recommend RPC 配置
+RecommendRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: recommend.rpc
+  Timeout: 10000
+  NonBlock: true

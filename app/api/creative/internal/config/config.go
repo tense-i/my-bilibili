@@ -16,4 +16,7 @@ type Config struct {
 
 	// Hotrank RPC 客户端配置
 	HotrankRpc zrpc.RpcClientConf
+
+	// Recommend RPC 客户端配置
+	RecommendRpc zrpc.RpcClientConf
 }

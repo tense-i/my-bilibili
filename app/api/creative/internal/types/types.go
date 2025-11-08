@@ -13,6 +13,20 @@ type GetHotRankListResp struct {
 	Total int64         `json:"total"` // 总数
 }
 
+type GetRecommendListReq struct {
+	Mid   int64 `form:"mid"`                       // 用户ID
+	Limit int32 `form:"limit,optional,default=20"` // 返回数量
+	Page  int32 `form:"page,optional,default=1"`   // 页码
+	Debug bool  `form:"debug,optional"`            // 调试模式
+}
+
+type GetRecommendListResp struct {
+	List      []RecommendItem   `json:"list"`
+	Total     int32             `json:"total"`
+	HasMore   bool              `json:"has_more"`
+	DebugInfo map[string]string `json:"debug_info,omitempty"`
+}
+
 type GetRegionHotRankListReq struct {
 	RegionId int64 `form:"region_id"`                 // 分区ID
 	Offset   int64 `form:"offset,optional,default=0"` // 偏移量
@@ -41,6 +55,26 @@ type HotRankItem struct {
 	Author string `json:"author"` // 作者
 	View   int64  `json:"view"`   // 播放量
 	Like   int64  `json:"like"`   // 点赞数
+}
+
+type RecommendItem struct {
+	AVID     int64    `json:"avid"`
+	Title    string   `json:"title"`
+	Cover    string   `json:"cover"`
+	Duration int32    `json:"duration"`
+	PubTime  int64    `json:"pub_time"`
+	ZoneID   int32    `json:"zone_id"`
+	ZoneName string   `json:"zone_name"`
+	UPMID    int64    `json:"up_mid"`
+	UPName   string   `json:"up_name"`
+	Play     int64    `json:"play"`
+	Like     int64    `json:"like"`
+	Coin     int64    `json:"coin"`
+	Fav      int64    `json:"fav"`
+	Share    int64    `json:"share"`
+	Score    float64  `json:"score"`
+	Reason   string   `json:"reason"`
+	Tags     []string `json:"tags"`
 }
 
 type VideoDetail struct {
