@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+package hotrank;
+option go_package = "./hotrank";
+
+// 热门排行榜服务
+service Hotrank {
+  // 获取全站热门排行榜
+  rpc GetHotRankList(GetHotRankListReq) returns (GetHotRankListResp);
+  
+  // 获取分区热门排行榜
+  rpc GetRegionHotRankList(GetRegionHotRankListReq) returns (GetRegionHotRankListResp);
+  
+  // 获取热度值（根据OID）
+  rpc GetHotByOID(GetHotByOIDReq) returns (GetHotByOIDResp);
+}
+
+// 获取全站热门排行榜请求
+message GetHotRankListReq {
+  int64 offset = 1;  // 偏移量
+  int64 limit = 2;   // 返回条数
+}
+
+// 获取全站热门排行榜响应
+message GetHotRankListResp {
+  repeated HotRankItem list = 1;  // 排行榜列表
+  int64 total = 2;                // 总数
+}
+
+// 获取分区热门排行榜请求
+message GetRegionHotRankListReq {
+  int64 region_id = 1;  // 分区ID
+  int64 offset = 2;     // 偏移量
+  int64 limit = 3;      // 返回条数
+}
+
+// 获取分区热门排行榜响应
+message GetRegionHotRankListResp {
+  repeated HotRankItem list = 1;  // 排行榜列表
+  int64 total = 2;                // 总数
+}
+
+// 获取热度值请求
+message GetHotByOIDReq {
+  int64 oid = 1;      // 对象ID
+  int32 business = 2; // 业务类型：1-视频，2-专栏
+}
+
+// 获取热度值响应
+message GetHotByOIDResp {
+  int64 hot = 1;  // 热度值
+}
+
+// 排行榜项
+message HotRankItem {
+  int64 oid = 1;      // 对象ID（视频ID）
+  int32 business = 2; // 业务类型：1-视频，2-专栏
+  int64 hot = 3;      // 热度值
+  int64 rank = 4;     // 排名（从1开始）
+}
+
+
