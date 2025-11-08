@@ -1,0 +1,31 @@
+Name: hotrank-job
+Mode: dev
+
+# MySQL 配置
+Mysql:
+  DataSource: root:root123456@tcp(127.0.0.1:33060)/mybilibili?charset=utf8mb4&parseTime=true&loc=Local
+
+# Redis 配置（可选，用于缓存）
+CacheRedis:
+  - Host: 127.0.0.1:63790
+    Pass: redis123456
+    Type: node
+
+# 热度计算开关
+HotSwitch: true
+
+# Video RPC 服务配置
+VideoRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:23790
+    Key: video.rpc
+  Timeout: 10000  # 10秒超时
+  NonBlock: true   # 非阻塞模式
+
+# 日志配置
+Log:
+  ServiceName: hotrank-job
+  Mode: console
+  Level: info
+
