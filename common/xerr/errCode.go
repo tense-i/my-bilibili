@@ -1,0 +1,29 @@
+package xerr
+
+// 错误码定义（参考 go-zero-looklook）
+const (
+	OK uint32 = 0
+
+	// 全局错误码 1-1000
+	SERVER_COMMON_ERROR uint32 = 1001
+	REQUEST_PARAM_ERROR uint32 = 1002
+	DB_ERROR            uint32 = 1003
+	DB_UPDATE_ERROR     uint32 = 1004
+
+	// 视频服务错误码 10001-11000
+	VIDEO_NOT_FOUND      uint32 = 10001
+	VIDEO_STAT_NOT_FOUND uint32 = 10002
+	VIDEO_INFO_ERROR     uint32 = 10003
+	VIDEO_STAT_ERROR     uint32 = 10004
+	VIDEO_LIST_ERROR     uint32 = 10005
+
+	// 热门排行榜错误码 11001-12000
+	HOTRANK_NOT_FOUND       uint32 = 11001
+	HOTRANK_CALCULATE_ERROR uint32 = 11002
+	HOTRANK_UPDATE_ERROR    uint32 = 11003
+	HOTRANK_QUERY_ERROR     uint32 = 11004
+
+	// 用户服务错误码 12001-13000
+	USER_NOT_FOUND  uint32 = 12001
+	USER_AUTH_ERROR uint32 = 12002
+)
