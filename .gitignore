@@ -1,0 +1,49 @@
+# 参考项目
+go-zero-looklook/
+
+# 二进制文件
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*-rpc
+*-api
+*-job
+hotrank-job
+video-rpc
+hotrank-rpc
+creative-api
+
+# 测试文件
+*.test
+*.out
+coverage.txt
+
+# Go 工作目录
+vendor/
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# 数据目录
+data/
+deploy/data/
+*.log
+
+# 临时文件
+tmp/
+temp/
+
+# Mac OS
+.DS_Store
+
+# 配置备份
+*.backup
+*.bak
+
+# 环境变量文件
+.env
+.env.local
