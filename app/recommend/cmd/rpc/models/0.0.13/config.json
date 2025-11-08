@@ -1,0 +1,6 @@
+{
+  "version": "0.0.13",
+  "num_features": 65,
+  "num_trees": 23,
+  "format": "treelite_protobuf"
+}

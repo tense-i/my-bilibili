@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package recommend;
+
+option go_package = "./recommend";
+
+// 推荐服务
+service Recommend {
+  // 获取推荐列表
+  rpc GetRecommendList(RecommendRequest) returns (RecommendResponse);
+}
+
+// 推荐请求
+message RecommendRequest {
+  int64 mid = 1;           // 用户ID
+  string buvid = 2;        // 设备ID（可选）
+  int32 limit = 3;         // 返回数量，默认20
+  int32 page = 4;          // 页码，默认1
+  bool debug = 5;          // 调试模式
+  string trace_id = 6;     // 追踪ID
+}
+
+// 推荐响应
+message RecommendResponse {
+  repeated RecommendItem list = 1;      // 推荐列表
+  int32 total = 2;                       // 总数
+  bool has_more = 3;                     // 是否还有更多
+  map<string, string> debug_info = 4;    // 调试信息
+  string message = 5;                    // 响应消息
+}
+
+// 推荐项
+message RecommendItem {
+  int64 avid = 1;           // 视频AV号
+  int64 cid = 2;            // 分P的CID
+  string title = 3;         // 标题
+  string cover = 4;         // 封面URL
+  int32 duration = 5;       // 时长(秒)
+  int64 pub_time = 6;       // 发布时间戳
+  int32 zone_id = 7;        // 分区ID
+  string zone_name = 8;     // 分区名称
+  int64 up_mid = 9;         // UP主MID
+  string up_name = 10;      // UP主名称
+  int64 play = 11;          // 播放量
+  int64 like = 12;          // 点赞数
+  int64 coin = 13;          // 投币数
+  int64 fav = 14;           // 收藏数
+  int64 share = 15;         // 分享数
+  double score = 16;        // 推荐分数
+  string reason = 17;       // 推荐理由
+  repeated string tags = 18; // 标签列表
+  map<string, string> extra = 19; // 额外信息
+}
+

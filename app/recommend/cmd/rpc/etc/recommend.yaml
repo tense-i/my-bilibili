@@ -1,0 +1,72 @@
+Name: recommend.rpc
+Mode: dev
+ListenOn: 127.0.0.1:9005
+
+# etcd 服务注册
+Etcd:
+  Hosts:
+    - 127.0.0.1:23790
+  Key: recommend.rpc
+
+# Prometheus 监控
+Prometheus:
+  Host: 127.0.0.1
+  Port: 9095
+  Path: /metrics
+
+# MySQL 配置
+MySQL:
+  DataSource: root:root123456@tcp(127.0.0.1:33060)/mybilibili?charset=utf8mb4&parseTime=true&loc=Local
+
+# Redis 配置
+CacheRedis:
+  - Host: 127.0.0.1:63790
+    Pass: redis123456
+    Type: node
+
+# 依赖服务 - 召回服务
+RecallRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:23790
+    Key: recall.rpc
+  Timeout: 5000
+  NonBlock: true
+
+# 依赖服务 - 视频服务
+VideoRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:23790
+    Key: video.rpc
+  Timeout: 5000
+  NonBlock: true
+
+# 模型配置
+RankModel:
+  ModelDir: ./models/0.0.13
+  ModelVersion: 0.0.13
+  Enable: true
+
+# 业务配置
+Business:
+  # 召回配置
+  RecallLimit: 500           # 总召回数量
+  RecallTimeout: 3000        # 召回超时时间(ms)
+  
+  # 排序配置
+  RankEnable: true          # 是否启用模型排序
+  RankFallback: true        # 排序失败是否降级
+  
+  # 过滤配置
+  BloomFilterEnable: true   # 是否启用布隆过滤
+  DurationMin: 60           # 最短时长(秒)
+  DurationMax: 3600         # 最长时长(秒)
+  
+  # 后处理配置
+  ScatterUPMinDistance: 3   # UP主打散最小距离
+  ScatterTagMinDistance: 5  # 标签打散最小距离
+  
+  # 缓存配置
+  CacheTTL: 300            # 推荐结果缓存时长(秒)
+
