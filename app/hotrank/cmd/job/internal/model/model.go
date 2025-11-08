@@ -7,3 +7,5 @@ type OArchive struct {
 	Business int   `db:"business"` // 业务类型：1-视频，2-专栏
 }
 
+
+

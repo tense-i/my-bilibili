@@ -66,3 +66,5 @@ func (d *AcademyDao) UPHotByAIDs(ctx context.Context, hots map[int64]int64) erro
 	return nil
 }
 
+
+
