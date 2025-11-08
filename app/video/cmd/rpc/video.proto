@@ -1,0 +1,103 @@
+syntax = "proto3";
+
+package video;
+option go_package = "./video";
+
+// 视频服务
+service Video {
+  // 获取视频信息
+  rpc GetVideoInfo(GetVideoInfoReq) returns (GetVideoInfoResp);
+  
+  // 批量获取视频信息
+  rpc BatchGetVideoInfo(BatchGetVideoInfoReq) returns (BatchGetVideoInfoResp);
+  
+  // 获取视频列表（游标分页）
+  rpc GetVideoList(GetVideoListReq) returns (GetVideoListResp);
+  
+  // 获取视频统计数据
+  rpc GetVideoStat(GetVideoStatReq) returns (GetVideoStatResp);
+  
+  // 批量获取视频统计数据
+  rpc BatchGetVideoStat(BatchGetVideoStatReq) returns (BatchGetVideoStatResp);
+}
+
+// ========== 获取视频信息 ==========
+message GetVideoInfoReq {
+  int64 vid = 1;  // 视频ID
+}
+
+message GetVideoInfoResp {
+  VideoInfo info = 1;
+}
+
+// ========== 批量获取视频信息 ==========
+message BatchGetVideoInfoReq {
+  repeated int64 vids = 1;  // 视频ID列表
+}
+
+message BatchGetVideoInfoResp {
+  map<int64, VideoInfo> infos = 1;  // key: vid, value: VideoInfo
+}
+
+// ========== 获取视频列表（游标分页）==========
+message GetVideoListReq {
+  int64 last_vid = 1;  // 游标（上一批的最后一个vid）
+  int32 limit = 2;     // 每页数量
+}
+
+message GetVideoListResp {
+  repeated VideoData list = 1;
+}
+
+// ========== 获取视频统计数据 ==========
+message GetVideoStatReq {
+  int64 vid = 1;
+}
+
+message GetVideoStatResp {
+  VideoStat stat = 1;
+}
+
+// ========== 批量获取视频统计数据 ==========
+message BatchGetVideoStatReq {
+  repeated int64 vids = 1;
+}
+
+message BatchGetVideoStatResp {
+  map<int64, VideoStat> stats = 1;  // key: vid, value: VideoStat
+}
+
+// ========== 数据结构 ==========
+
+// 视频信息
+message VideoInfo {
+  int64 vid = 1;           // 视频ID
+  string title = 2;        // 标题
+  string cover = 3;        // 封面
+  int64 author_id = 4;     // 作者ID
+  string author_name = 5;  // 作者名称
+  int64 region_id = 6;     // 分区ID
+  int64 pub_time = 7;      // 发布时间（Unix时间戳）
+  int32 duration = 8;      // 时长（秒）
+  string desc = 9;         // 简介
+  int32 state = 10;        // 状态：0-正常，1-删除
+}
+
+// 视频统计数据
+message VideoStat {
+  int64 vid = 1;        // 视频ID
+  int64 view = 2;       // 播放数
+  int64 like = 3;       // 点赞数
+  int64 coin = 4;       // 硬币数
+  int64 fav = 5;        // 收藏数
+  int64 share = 6;      // 分享数
+  int64 reply = 7;      // 评论数
+  int64 danmaku = 8;    // 弹幕数
+}
+
+// 视频完整数据（信息+统计）
+message VideoData {
+  VideoInfo info = 1;
+  VideoStat stat = 2;
+}
+

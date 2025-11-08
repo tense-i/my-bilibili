@@ -1,0 +1,42 @@
+Name: video.rpc
+ListenOn: 127.0.0.1:9001
+Mode: dev
+
+# etcd 服务注册配置
+Etcd:
+  Hosts:
+    - 127.0.0.1:23790
+  Key: video.rpc
+  # User: ""
+  # Pass: ""
+
+# MySQL 配置
+Mysql:
+  DataSource: root:root123456@tcp(127.0.0.1:33060)/mybilibili?charset=utf8mb4&parseTime=true&loc=Local
+
+# Redis 配置
+CacheRedis:
+  - Host: 127.0.0.1:63790
+    Pass: redis123456
+    Type: node
+
+# 日志配置
+Log:
+  ServiceName: video-rpc
+  Mode: console
+  Level: info
+  Encoding: plain
+
+# Prometheus 监控
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9081
+  Path: /metrics
+
+# 链路追踪
+Telemetry:
+  Name: video-rpc
+  Endpoint: http://127.0.0.1:14268/api/traces
+  Sampler: 1.0
+  Batcher: jaeger
+
