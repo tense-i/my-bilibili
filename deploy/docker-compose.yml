@@ -105,8 +105,63 @@ services:
       - "3000:3000"
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin123456
+      - GF_INSTALL_PLUGINS=redis-datasource
     volumes:
       - ./data/grafana:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    networks:
+      - mybilibili-net
+
+  # MySQL Exporter 监控
+  mysql-exporter:
+    image: prom/mysqld-exporter:latest
+    container_name: mybilibili-mysql-exporter
+    restart: always
+    ports:
+      - "9104:9104"
+    environment:
+      - DATA_SOURCE_NAME=root:root123456@(mysql:3306)/
+    command:
+      - --collect.info_schema.tables
+      - --collect.info_schema.innodb_metrics
+      - --collect.global_status
+      - --collect.global_variables
+      - --collect.slave_status
+    networks:
+      - mybilibili-net
+    depends_on:
+      - mysql
+
+  # Redis Exporter 监控
+  redis-exporter:
+    image: oliver006/redis_exporter:latest
+    container_name: mybilibili-redis-exporter
+    restart: always
+    ports:
+      - "9121:9121"
+    environment:
+      - REDIS_ADDR=redis:6379
+      - REDIS_PASSWORD=redis123456
+    networks:
+      - mybilibili-net
+    depends_on:
+      - redis
+
+  # Node Exporter 系统监控
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: mybilibili-node-exporter
+    restart: always
+    ports:
+      - "9100:9100"
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
     networks:
       - mybilibili-net
 

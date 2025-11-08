@@ -2,23 +2,32 @@
 global:
   scrape_interval: 15s
   evaluation_interval: 15s
+  external_labels:
+    cluster: 'mybilibili'
+    env: 'dev'
+
+# 告警规则文件（可选）
+# rule_files:
+#   - 'rules/*.yml'
 
 scrape_configs:
+  # ==================== 微服务监控 ====================
+  
   # video-rpc 服务监控
   - job_name: 'video-rpc'
     static_configs:
       - targets: ['host.docker.internal:9081']
         labels:
           service: 'video-rpc'
-          env: 'dev'
+          app: 'mybilibili'
 
   # hotrank-rpc 服务监控
   - job_name: 'hotrank-rpc'
     static_configs:
-      - targets: ['host.docker.internal:9082']
+      - targets: ['host.docker.internal:9093']
         labels:
           service: 'hotrank-rpc'
-          env: 'dev'
+          app: 'mybilibili'
 
   # creative-api 服务监控
   - job_name: 'creative-api'
@@ -26,5 +35,44 @@ scrape_configs:
       - targets: ['host.docker.internal:9091']
         labels:
           service: 'creative-api'
-          env: 'dev'
+          app: 'mybilibili'
+
+  # ==================== 基础设施监控 ====================
+  
+  # Prometheus 自监控
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+        labels:
+          service: 'prometheus'
+
+  # MySQL 数据库监控
+  - job_name: 'mysql'
+    static_configs:
+      - targets: ['mysql-exporter:9104']
+        labels:
+          service: 'mysql'
+          instance: 'mybilibili-mysql'
+    metric_relabel_configs:
+      # 重命名指标，使其更易读
+      - source_labels: [__name__]
+        regex: 'mysql_(.*)'
+        target_label: __name__
+        replacement: 'mysql_${1}'
+
+  # Redis 缓存监控
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+        labels:
+          service: 'redis'
+          instance: 'mybilibili-redis'
+
+  # Node Exporter 系统监控
+  - job_name: 'node'
+    static_configs:
+      - targets: ['node-exporter:9100']
+        labels:
+          service: 'node-exporter'
+          instance: 'mybilibili-host'
 
