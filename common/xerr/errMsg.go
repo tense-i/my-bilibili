@@ -21,6 +21,13 @@ var msgMap = map[uint32]string{
 
 	USER_NOT_FOUND:  "用户不存在",
 	USER_AUTH_ERROR: "用户认证失败",
+
+	WALLET_NOT_FOUND:    "钱包不存在",
+	COIN_NOT_ENOUGH:     "余额不足",
+	TRANSACTION_LOCKED:  "交易处理中",
+	WALLET_LOCKED:       "账户操作中",
+	INVALID_COIN_TYPE:   "无效的币种类型",
+	EXCHANGE_RATE_ERROR: "兑换比例错误",
 }
 
 // MapErrMsg 根据错误码获取错误消息

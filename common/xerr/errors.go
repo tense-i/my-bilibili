@@ -42,3 +42,13 @@ func (e *CodeError) Data() *CodeError {
 		Msg:  e.Msg,
 	}
 }
+
+// NewErrCode 根据错误码创建错误（便捷函数）
+func NewErrCode(code uint32) error {
+	return NewCodeErrorWithMsg(code)
+}
+
+// NewErrMsg 根据自定义消息创建错误（便捷函数）
+func NewErrMsg(msg string) error {
+	return &CodeError{Code: SERVER_COMMON_ERROR, Msg: msg}
+}
