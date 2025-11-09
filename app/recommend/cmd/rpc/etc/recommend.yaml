@@ -55,11 +55,11 @@ Business:
   RecallTimeout: 3000        # 召回超时时间(ms)
   
   # 排序配置
-  RankEnable: true          # 是否启用模型排序
+  RankEnable: false         # 是否启用模型排序（暂时禁用，使用规则排序）
   RankFallback: true        # 排序失败是否降级
   
   # 过滤配置
-  BloomFilterEnable: true   # 是否启用布隆过滤
+  BloomFilterEnable: false  # 是否启用布隆过滤（暂时禁用以调试）
   DurationMin: 60           # 最短时长(秒)
   DurationMax: 3600         # 最长时长(秒)
   

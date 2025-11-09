@@ -90,8 +90,8 @@ func (l *GetRecommendListLogic) GetRecommendList(in *recommend.RecommendRequest)
 
 	// 6. 排序（XGBoost 模型或规则排序）
 	if l.svcCtx.BusinessConfig.RankEnable {
-		rankManager := rank.NewRankModelManager(l.svcCtx.Config.RankModel.ModelDir)
-		err = rankManager.DoRank(in, records, userProfile)
+		// 使用已初始化的模型管理器（避免每次请求都重新加载模型）
+		err = l.svcCtx.RankModel.DoRank(in, records, userProfile)
 		if err != nil && l.svcCtx.BusinessConfig.RankFallback {
 			logx.Errorf("模型排序失败，降级为规则排序: %v", err)
 			rank.RuleBasedRank(records, userProfile)
@@ -657,6 +657,13 @@ func (l *GetRecommendListLogic) enrichVideoInfo(records []*model.RecommendRecord
 		record.Play = videoInfo.PlayMonth
 		record.Like = videoInfo.LikesMonth
 		// Tags 已经在 GetVideosInfo 中填充
+		record.Tags = videoInfo.Tags
+
+		// 填充分区名称
+		record.ZoneName = l.getZoneName(videoInfo.ZoneID)
+
+		// 填充UP主名称（如果没有用户表，使用MID作为临时名称）
+		record.UPName = l.getUPName(videoInfo.UPMID)
 
 		// 生成推荐理由
 		record.Reason = l.generateReason(record)
@@ -665,6 +672,61 @@ func (l *GetRecommendListLogic) enrichVideoInfo(records []*model.RecommendRecord
 	}
 
 	return enriched
+}
+
+// getZoneName 获取分区名称
+func (l *GetRecommendListLogic) getZoneName(zoneID int32) string {
+	zoneMap := map[int32]string{
+		17:  "单机游戏",
+		20:  "动画",
+		21:  "番剧",
+		22:  "国创",
+		23:  "音乐",
+		24:  "舞蹈",
+		25:  "游戏",
+		26:  "科技",
+		27:  "数码",
+		28:  "生活",
+		29:  "鬼畜",
+		30:  "时尚",
+		31:  "娱乐",
+		32:  "影视",
+		33:  "纪录片",
+		34:  "电影",
+		35:  "电视剧",
+		36:  "知识",
+		75:  "MAD·AMV",
+		76:  "MMD·3D",
+		85:  "短片",
+		95:  "影视",
+		124: "动物圈",
+		125: "美食",
+		126: "汽车",
+		127: "运动",
+		128: "VLOG",
+		129: "知识",
+		130: "资讯",
+		131: "音乐",
+		154: "桌游棋牌",
+		156: "手工",
+		157: "绘画",
+		158: "运动",
+		159: "汽车",
+		168: "国创相关",
+		183: "运动",
+		184: "汽车",
+	}
+	if name, ok := zoneMap[zoneID]; ok {
+		return name
+	}
+	return fmt.Sprintf("分区%d", zoneID)
+}
+
+// getUPName 获取UP主名称
+func (l *GetRecommendListLogic) getUPName(upMID int64) string {
+	// 如果没有用户表，可以使用MID作为临时名称
+	// 在实际项目中，应该从用户表查询UP主名称
+	return fmt.Sprintf("UP主%d", upMID)
 }
 
 // generateReason 生成推荐理由
