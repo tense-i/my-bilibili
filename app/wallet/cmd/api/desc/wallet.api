@@ -1,0 +1,126 @@
+syntax = "v1"
+
+info (
+	title:   "钱包 API"
+	desc:    "虚拟钱包系统HTTP接口"
+	author:  "mybilibili"
+	version: "v2.0.0"
+)
+
+// ==================== 数据结构定义 ====================
+// 充值请求
+type RechargeReq {
+	Uid           int64  `json:"uid"`
+	CoinType      string `json:"coin_type"` // gold/iap_gold
+	CoinNum       int64  `json:"coin_num"`
+	TransactionId string `json:"transaction_id"`
+	ExtendTid     string `json:"extend_tid,optional"`
+	Platform      string `json:"platform"` // ios/android/pc/h5
+	Timestamp     int64  `json:"timestamp,optional"`
+	BizCode       string `json:"biz_code,optional"`
+}
+
+type WalletResp {
+	Gold    int64 `json:"gold"`
+	IapGold int64 `json:"iap_gold"`
+	Silver  int64 `json:"silver"`
+}
+
+// 消费请求
+type PayReq {
+	Uid           int64  `json:"uid"`
+	CoinType      string `json:"coin_type"`
+	CoinNum       int64  `json:"coin_num"`
+	TransactionId string `json:"transaction_id"`
+	ExtendTid     string `json:"extend_tid,optional"`
+	Platform      string `json:"platform"`
+	Timestamp     int64  `json:"timestamp,optional"`
+	BizCode       string `json:"biz_code,optional"`
+}
+
+// 兑换请求
+type ExchangeReq {
+	Uid           int64  `json:"uid"`
+	SrcCoinType   string `json:"src_coin_type"`
+	SrcCoinNum    int64  `json:"src_coin_num"`
+	DestCoinType  string `json:"dest_coin_type"`
+	DestCoinNum   int64  `json:"dest_coin_num"`
+	TransactionId string `json:"transaction_id"`
+	Platform      string `json:"platform"`
+}
+
+// 查询余额请求
+type GetDetailReq {
+	Uid      int64  `form:"uid"`
+	Platform string `form:"platform,optional,default=android"`
+}
+
+type GetDetailResp {
+	Detail WalletDetail `json:"detail"`
+}
+
+type WalletDetail {
+	Uid             int64 `json:"uid"`
+	Gold            int64 `json:"gold"`
+	IapGold         int64 `json:"iap_gold"`
+	Silver          int64 `json:"silver"`
+	GoldRechargeCnt int64 `json:"gold_recharge_cnt"`
+	GoldPayCnt      int64 `json:"gold_pay_cnt"`
+	SilverPayCnt    int64 `json:"silver_pay_cnt"`
+	CostBase        int64 `json:"cost_base"`
+}
+
+// 查询流水请求
+type GetStreamListReq {
+	Uid    int64 `form:"uid"`
+	Offset int64 `form:"offset,optional,default=0"`
+	Limit  int64 `form:"limit,optional,default=20"`
+}
+
+type GetStreamListResp {
+	List  []CoinStreamRecord `json:"list"`
+	Total int64              `json:"total"`
+}
+
+type CoinStreamRecord {
+	Id            int64  `json:"id"`
+	Uid           int64  `json:"uid"`
+	TransactionId string `json:"transaction_id"`
+	CoinType      int32  `json:"coin_type"`
+	DeltaCoinNum  int64  `json:"delta_coin_num"`
+	OrgCoinNum    int64  `json:"org_coin_num"`
+	OpResult      int32  `json:"op_result"`
+	OpReason      int32  `json:"op_reason"`
+	OpType        int32  `json:"op_type"`
+	OpTime        string `json:"op_time"`
+	BizCode       string `json:"biz_code"`
+	Platform      int32  `json:"platform"`
+}
+
+// ==================== 路由定义 ====================
+@server (
+	prefix: /api/wallet/v1
+	group:  wallet
+)
+service wallet {
+	@doc "充值"
+	@handler Recharge
+	post /recharge (RechargeReq) returns (WalletResp)
+
+	@doc "消费"
+	@handler Pay
+	post /pay (PayReq) returns (WalletResp)
+
+	@doc "兑换"
+	@handler Exchange
+	post /exchange (ExchangeReq) returns (WalletResp)
+
+	@doc "查询余额"
+	@handler GetDetail
+	get /detail (GetDetailReq) returns (GetDetailResp)
+
+	@doc "查询流水"
+	@handler GetStreamList
+	get /stream (GetStreamListReq) returns (GetStreamListResp)
+}
+

@@ -1,0 +1,128 @@
+syntax = "proto3";
+
+package wallet;
+option go_package = "./wallet";
+
+// ==================== 钱包服务 ====================
+service Wallet {
+  // 充值
+  rpc Recharge(RechargeReq) returns(RechargeResp);
+  
+  // 消费
+  rpc Pay(PayReq) returns(PayResp);
+  
+  // 兑换
+  rpc Exchange(ExchangeReq) returns(ExchangeResp);
+  
+  // 查询余额详情
+  rpc GetDetail(GetDetailReq) returns(GetDetailResp);
+  
+  // 查询流水列表
+  rpc GetStreamList(GetStreamListReq) returns(GetStreamListResp);
+}
+
+// ==================== 充值接口 ====================
+
+message RechargeReq {
+  int64 uid = 1;                    // 用户ID
+  string coin_type = 2;             // 币种：gold/iap_gold
+  int64 coin_num = 3;               // 充值金额
+  string transaction_id = 4;        // 交易ID（幂等性保证）
+  string extend_tid = 5;            // 扩展交易ID
+  string platform = 6;              // 平台：ios/android/pc/h5
+  int64 timestamp = 7;              // 时间戳
+  string biz_code = 8;              // 业务代码
+}
+
+message RechargeResp {
+  int64 gold = 1;                   // 金瓜子余额
+  int64 iap_gold = 2;               // IAP金瓜子余额
+  int64 silver = 3;                 // 银瓜子余额
+}
+
+// ==================== 消费接口 ====================
+
+message PayReq {
+  int64 uid = 1;                    // 用户ID
+  string coin_type = 2;             // 消费币种
+  int64 coin_num = 3;               // 消费金额
+  string transaction_id = 4;        // 交易ID
+  string extend_tid = 5;            // 扩展交易ID
+  string platform = 6;              // 平台
+  int64 timestamp = 7;              // 时间戳
+  string biz_code = 8;              // 业务代码
+}
+
+message PayResp {
+  int64 gold = 1;                   // 金瓜子余额
+  int64 iap_gold = 2;               // IAP金瓜子余额
+  int64 silver = 3;                 // 银瓜子余额
+}
+
+// ==================== 兑换接口 ====================
+
+message ExchangeReq {
+  int64 uid = 1;                    // 用户ID
+  string src_coin_type = 2;         // 源币种
+  int64 src_coin_num = 3;           // 源币种数量
+  string dest_coin_type = 4;        // 目标币种
+  int64 dest_coin_num = 5;          // 目标币种数量
+  string transaction_id = 6;        // 交易ID
+  string platform = 7;              // 平台
+}
+
+message ExchangeResp {
+  int64 gold = 1;                   // 金瓜子余额
+  int64 iap_gold = 2;               // IAP金瓜子余额
+  int64 silver = 3;                 // 银瓜子余额
+}
+
+// ==================== 查询余额接口 ====================
+
+message GetDetailReq {
+  int64 uid = 1;                    // 用户ID
+  string platform = 2;              // 平台
+}
+
+message GetDetailResp {
+  WalletDetail detail = 1;          // 钱包详情
+}
+
+message WalletDetail {
+  int64 uid = 1;                    // 用户ID
+  int64 gold = 2;                   // 金瓜子
+  int64 iap_gold = 3;               // IAP金瓜子
+  int64 silver = 4;                 // 银瓜子
+  int64 gold_recharge_cnt = 5;      // 累计充值
+  int64 gold_pay_cnt = 6;           // 累计消费
+  int64 silver_pay_cnt = 7;         // 银瓜子消费
+  int64 cost_base = 8;              // 消费基数
+}
+
+// ==================== 查询流水接口 ====================
+
+message GetStreamListReq {
+  int64 uid = 1;                    // 用户ID
+  int64 offset = 2;                 // 偏移量
+  int64 limit = 3;                  // 返回条数
+}
+
+message GetStreamListResp {
+  repeated CoinStreamRecord list = 1; // 流水列表
+  int64 total = 2;                    // 总数
+}
+
+message CoinStreamRecord {
+  int64 id = 1;                     // 流水ID
+  int64 uid = 2;                    // 用户ID
+  string transaction_id = 3;        // 交易ID
+  int32 coin_type = 4;              // 币种类型
+  int64 delta_coin_num = 5;         // 变化金额
+  int64 org_coin_num = 6;           // 原始余额
+  int32 op_result = 7;              // 操作结果
+  int32 op_reason = 8;              // 失败原因
+  int32 op_type = 9;                // 操作类型
+  string op_time = 10;              // 操作时间
+  string biz_code = 11;             // 业务代码
+  int32 platform = 12;              // 平台
+}
