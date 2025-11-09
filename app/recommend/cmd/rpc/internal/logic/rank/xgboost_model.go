@@ -108,7 +108,7 @@ func (m *XGBoostModel) loadFromJSON(jsonPath string) error {
 				Model struct {
 					Trees []struct {
 						TreeParam struct {
-							NumNodes int `json:"num_nodes"`
+							NumNodes string `json:"num_nodes"` // XGBoost JSON 中 num_nodes 是字符串
 						} `json:"tree_param"`
 						SplitIndices    []int     `json:"split_indices"`
 						SplitConditions []float64 `json:"split_conditions"`
@@ -128,10 +128,33 @@ func (m *XGBoostModel) loadFromJSON(jsonPath string) error {
 
 	// 转换为内部格式
 	trees := xgbModel.Learner.GradientBooster.Model.Trees
-	m.Trees = make([]*DecisionTree, len(trees))
+	if len(trees) == 0 {
+		return fmt.Errorf("模型中没有树")
+	}
+
+	m.Trees = make([]*DecisionTree, 0, len(trees))
 
 	for i, tree := range trees {
-		numNodes := tree.TreeParam.NumNodes
+		// 解析 num_nodes（字符串转整数）
+		var numNodes int
+		if _, err := fmt.Sscanf(tree.TreeParam.NumNodes, "%d", &numNodes); err != nil {
+			// 如果解析失败，使用数组长度
+			numNodes = len(tree.LeftChildren)
+			logx.Infof("无法解析 num_nodes，使用数组长度: %d", numNodes)
+		}
+
+		// 验证数组长度一致性
+		if numNodes != len(tree.LeftChildren) ||
+			numNodes != len(tree.RightChildren) ||
+			numNodes != len(tree.SplitIndices) ||
+			numNodes != len(tree.LeafValues) {
+			logx.Infof("树 %d 节点数不一致: num_nodes=%d, left_children=%d, right_children=%d, split_indices=%d, leaf_values=%d",
+				i, numNodes, len(tree.LeftChildren), len(tree.RightChildren),
+				len(tree.SplitIndices), len(tree.LeafValues))
+			// 使用实际数组长度
+			numNodes = len(tree.LeftChildren)
+		}
+
 		nodes := make([]TreeNode, numNodes)
 
 		for j := 0; j < numNodes; j++ {
@@ -139,27 +162,46 @@ func (m *XGBoostModel) loadFromJSON(jsonPath string) error {
 				NodeID: j,
 			}
 
-			// 判断是否为叶子节点
-			if tree.LeftChildren[j] == -1 && tree.RightChildren[j] == -1 {
+			// 判断是否为叶子节点（XGBoost 中叶子节点的 left_children 和 right_children 都是 -1）
+			if j < len(tree.LeftChildren) && j < len(tree.RightChildren) &&
+				tree.LeftChildren[j] == -1 && tree.RightChildren[j] == -1 {
 				// 叶子节点
 				node.FeatureIndex = -1
-				node.LeafValue = tree.LeafValues[j]
+				if j < len(tree.LeafValues) {
+					node.LeafValue = tree.LeafValues[j]
+				}
 			} else {
 				// 内部节点
-				node.FeatureIndex = tree.SplitIndices[j]
-				node.Threshold = tree.SplitConditions[j]
-				node.LeftChild = tree.LeftChildren[j]
-				node.RightChild = tree.RightChildren[j]
-				node.MissingGoTo = tree.LeftChildren[j] // 缺失值默认走左子树
-				if tree.DefaultLeft[j] == 0 {
-					node.MissingGoTo = tree.RightChildren[j]
+				if j < len(tree.SplitIndices) {
+					node.FeatureIndex = tree.SplitIndices[j]
+				}
+				if j < len(tree.SplitConditions) {
+					node.Threshold = tree.SplitConditions[j]
+				}
+				if j < len(tree.LeftChildren) {
+					node.LeftChild = tree.LeftChildren[j]
+				}
+				if j < len(tree.RightChildren) {
+					node.RightChild = tree.RightChildren[j]
+				}
+
+				// 缺失值处理（default_left: 1=走左子树, 0=走右子树）
+				if j < len(tree.DefaultLeft) && j < len(tree.LeftChildren) && j < len(tree.RightChildren) {
+					if tree.DefaultLeft[j] == 1 {
+						node.MissingGoTo = tree.LeftChildren[j]
+					} else {
+						node.MissingGoTo = tree.RightChildren[j]
+					}
+				} else if j < len(tree.LeftChildren) {
+					// 默认走左子树
+					node.MissingGoTo = tree.LeftChildren[j]
 				}
 			}
 
 			nodes[j] = node
 		}
 
-		m.Trees[i] = &DecisionTree{Nodes: nodes}
+		m.Trees = append(m.Trees, &DecisionTree{Nodes: nodes})
 	}
 
 	logx.Infof("从 JSON 加载了 %d 棵树", len(m.Trees))

@@ -22,15 +22,53 @@ func NewPostProcessor(svcCtx *svc.ServiceContext) *PostProcessor {
 
 // Process 执行后处理
 func (p *PostProcessor) Process(ctx context.Context, req *recommend.RecommendRequest, records []*model.RecommendRecord, profile *model.UserProfile) []*model.RecommendRecord {
-	// 1. 布隆过滤器去重（检查用户是否看过）
+	if len(records) == 0 {
+		return records
+	}
+
+	// 1. 时长过滤（B站主站视频时长：60-3600秒）
+	// 注意：如果配置为0，不进行时长过滤
+	durationMin := p.svcCtx.BusinessConfig.DurationMin
+	durationMax := p.svcCtx.BusinessConfig.DurationMax
+	if durationMin > 0 || durationMax > 0 {
+		records = p.durationFilterProcess(records)
+	}
+
+	// 2. 布隆过滤器去重（检查用户是否看过）
 	if p.svcCtx.BusinessConfig.BloomFilterEnable && req.Mid > 0 {
 		records = p.bloomFilterProcess(ctx, req.Mid, records)
 	}
 
-	// 2. 打散策略（避免连续同UP主/同标签）
-	records = p.scatterProcess(records)
+	// 3. 打散策略（避免连续同UP主/同标签）
+	// 只在记录数大于3时才进行打散
+	if len(records) > 3 {
+		records = p.scatterProcess(records)
+	}
 
 	return records
+}
+
+// durationFilterProcess 时长过滤处理
+func (p *PostProcessor) durationFilterProcess(records []*model.RecommendRecord) []*model.RecommendRecord {
+	minDuration := p.svcCtx.BusinessConfig.DurationMin
+	maxDuration := p.svcCtx.BusinessConfig.DurationMax
+
+	// 如果配置为0，使用默认值
+	if minDuration == 0 {
+		minDuration = 60 // 1分钟
+	}
+	if maxDuration == 0 {
+		maxDuration = 3600 // 60分钟
+	}
+
+	filtered := make([]*model.RecommendRecord, 0, len(records))
+	for _, record := range records {
+		if record.Duration >= int32(minDuration) && record.Duration <= int32(maxDuration) {
+			filtered = append(filtered, record)
+		}
+	}
+
+	return filtered
 }
 
 // bloomFilterProcess 布隆过滤器处理
@@ -40,9 +78,16 @@ func (p *PostProcessor) bloomFilterProcess(ctx context.Context, mid int64, recor
 	for _, record := range records {
 		// 检查用户是否看过该视频
 		seen, err := p.svcCtx.Dao.CheckBloomFilter(ctx, mid, record.AVID)
-		if err != nil || !seen {
+		if err != nil {
+			// 如果检查出错，保留记录（保守策略）
+			filtered = append(filtered, record)
+			continue
+		}
+		// 如果用户没看过（seen=false），保留记录
+		if !seen {
 			filtered = append(filtered, record)
 		}
+		// 如果用户看过（seen=true），过滤掉该记录
 	}
 
 	return filtered
