@@ -178,22 +178,87 @@ uid  | gold | gold_recharge_cnt | gold_pay_cnt
 
 ---
 
-## 待测试功能
+## ✅ 阶段四：兑换功能测试（已完成）
 
-### 阶段四：兑换功能
-- [ ] 金瓜子 -> 银瓜子
-- [ ] iap_gold -> 银瓜子
-- [ ] 兑换比例验证
+### 测试用例4：正常兑换
+```bash
+curl -s http://127.0.0.1:8004/api/wallet/v1/exchange \
+  -H "Content-Type: application/json" \
+  -d '{
+    "uid": 1001,
+    "src_coin_type": "gold",
+    "src_coin_num": 100,
+    "dest_coin_type": "silver",
+    "dest_coin_num": 100,
+    "transaction_id": "tid_exchange_xxx",
+    "platform": "android"
+  }'
+```
 
-### 阶段五：查询功能
-- [ ] 余额详情查询
-- [ ] 流水列表查询（分页）
-- [ ] 快照机制
+**测试结果**: ✅ 通过
+- 兑换前：gold=1050, silver=600
+- 兑换后：gold=950, silver=700
+- 兑换记录：2条
+- 双流水记录完整
+
+### 测试用例5：余额不足兑换
+**测试结果**: ✅ 通过
+```
+返回错误：Code: 13002, Msg: 余额不足
+```
+
+### 测试用例6：错误兑换比例
+**测试结果**: ✅ 通过
+```
+返回错误：Code: 13006, Msg: 兑换比例错误
+```
+
+---
+
+## ✅ 阶段五：查询功能测试（已完成）
+
+### 测试用例7：查询余额详情
+```bash
+curl "http://127.0.0.1:8004/api/wallet/v1/detail?uid=1001&platform=android"
+```
+
+**测试结果**: ✅ 通过
+```json
+{
+    "detail": {
+        "uid": 1001,
+        "gold": 950,
+        "iap_gold": 0,
+        "silver": 700,
+        "gold_recharge_cnt": 1300,
+        "gold_pay_cnt": 350,
+        "silver_pay_cnt": 0,
+        "cost_base": 0
+    }
+}
+```
+
+### 测试用例8：查询流水列表（分页）
+```bash
+curl "http://127.0.0.1:8004/api/wallet/v1/stream?uid=1001&offset=0&limit=10"
+```
+
+**测试结果**: ✅ 通过
+- 返回10条流水记录
+- 包含充值记录（op_type=1）
+- 包含消费记录（op_type=2）
+- 包含兑换记录（op_type=3, 双条）
+- total统计：10
+
+---
+
+## 待实现功能
 
 ### 阶段六：高级功能
 - [ ] Kafka消息发布
-- [ ] 快照对账
+- [ ] 快照对账机制
 - [ ] 并发压力测试
+- [ ] 缓存优化
 
 ---
 
