@@ -1,0 +1,32 @@
+Name: wallet-api
+Host: 0.0.0.0
+Port: 8004
+Mode: dev
+
+# 日志配置
+Log:
+  ServiceName: wallet-api
+  Mode: console
+  Level: info
+
+# Prometheus监控
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9094
+  Path: /metrics
+
+# Telemetry链路追踪
+Telemetry:
+  Name: wallet-api
+  Endpoint: http://127.0.0.1:14268/api/traces
+  Sampler: 1.0
+  Batcher: jaeger
+
+# Wallet RPC服务配置
+WalletRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:23790
+    Key: wallet.rpc
+  Timeout: 10000
+  NonBlock: true
