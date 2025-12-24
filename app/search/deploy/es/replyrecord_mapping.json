@@ -1,0 +1,49 @@
+{
+  "settings": {
+    "number_of_shards": 3,
+    "number_of_replicas": 1
+  },
+  "mappings": {
+    "properties": {
+      "id": {
+        "type": "long"
+      },
+      "oid": {
+        "type": "long"
+      },
+      "mid": {
+        "type": "long"
+      },
+      "type": {
+        "type": "integer"
+      },
+      "state": {
+        "type": "integer"
+      },
+      "content": {
+        "type": "text",
+        "analyzer": "standard"
+      },
+      "like": {
+        "type": "long"
+      },
+      "hate": {
+        "type": "long"
+      },
+      "rcount": {
+        "type": "integer"
+      },
+      "floor": {
+        "type": "integer"
+      },
+      "ctime": {
+        "type": "date",
+        "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"
+      },
+      "mtime": {
+        "type": "date",
+        "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"
+      }
+    }
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "settings": {
+    "number_of_shards": 3,
+    "number_of_replicas": 1
+  },
+  "mappings": {
+    "properties": {
+      "media_id": {
+        "type": "long"
+      },
+      "season_id": {
+        "type": "long"
+      },
+      "title": {
+        "type": "text",
+        "analyzer": "standard",
+        "fields": {
+          "keyword": {
+            "type": "keyword"
+          }
+        }
+      },
+      "season_type": {
+        "type": "integer"
+      },
+      "style_id": {
+        "type": "long"
+      },
+      "status": {
+        "type": "integer"
+      },
+      "release_date": {
+        "type": "date",
+        "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"
+      },
+      "producer_id": {
+        "type": "long"
+      },
+      "is_deleted": {
+        "type": "integer"
+      },
+      "area_id": {
+        "type": "keyword"
+      },
+      "score": {
+        "type": "float"
+      },
+      "score_from": {
+        "type": "float"
+      },
+      "score_to": {
+        "type": "float"
+      },
+      "is_finish": {
+        "type": "keyword"
+      },
+      "season_version": {
+        "type": "integer"
+      },
+      "season_status": {
+        "type": "integer"
+      },
+      "pub_time": {
+        "type": "date",
+        "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"
+      },
+      "season_month": {
+        "type": "integer"
+      },
+      "latest_time": {
+        "type": "date",
+        "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"
+      },
+      "copyright_info": {
+        "type": "keyword"
+      },
+      "dm_count": {
+        "type": "long"
+      },
+      "play_count": {
+        "type": "long"
+      },
+      "fav_count": {
+        "type": "long"
+      },
+      "ctime": {
+        "type": "date",
+        "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"
+      },
+      "mtime": {
+        "type": "date",
+        "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"
+      }
+    }
+  }
+}

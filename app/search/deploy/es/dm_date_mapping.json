@@ -1,0 +1,29 @@
+{
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 1
+  },
+  "mappings": {
+    "properties": {
+      "id": {
+        "type": "long"
+      },
+      "oid": {
+        "type": "long"
+      },
+      "month": {
+        "type": "keyword"
+      },
+      "date": {
+        "type": "keyword"
+      },
+      "total": {
+        "type": "long"
+      },
+      "ctime": {
+        "type": "date",
+        "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"
+      }
+    }
+  }
+}
