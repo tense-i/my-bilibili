@@ -1,0 +1,863 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Coupon API",
+    "description": "优惠券服务 API",
+    "version": "v1.0.0"
+  },
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/coupon/v1/allowance/cancel": {
+      "post": {
+        "summary": "取消使用代金券",
+        "operationId": "CancelAllowanceCoupon",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {}
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CancelAllowanceCouponReq"
+            }
+          }
+        ],
+        "tags": [
+          "allowance"
+        ]
+      }
+    },
+    "/api/coupon/v1/allowance/list": {
+      "get": {
+        "summary": "代金券列表",
+        "operationId": "AllowanceList",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/AllowanceListResp"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "mid",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "allowance"
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ]
+      }
+    },
+    "/api/coupon/v1/allowance/receive": {
+      "post": {
+        "summary": "领取代金券",
+        "operationId": "ReceiveAllowance",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ReceiveAllowanceResp"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ReceiveAllowanceReq"
+            }
+          }
+        ],
+        "tags": [
+          "allowance"
+        ]
+      }
+    },
+    "/api/coupon/v1/allowance/usable": {
+      "post": {
+        "summary": "获取可用代金券V2",
+        "operationId": "UsableAllowanceCouponV2",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/UsableAllowanceCouponV2Resp"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " ========== 代金券 ==========",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UsableAllowanceCouponV2Req"
+            }
+          }
+        ],
+        "tags": [
+          "allowance"
+        ]
+      }
+    },
+    "/api/coupon/v1/allowance/use": {
+      "post": {
+        "summary": "使用代金券",
+        "operationId": "UseAllowanceCoupon",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {}
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UseAllowanceCouponReq"
+            }
+          }
+        ],
+        "tags": [
+          "allowance"
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ]
+      }
+    },
+    "/api/coupon/v1/captcha/token": {
+      "get": {
+        "summary": "获取验证码Token",
+        "operationId": "CaptchaToken",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/CaptchaTokenResp"
+            }
+          }
+        },
+        "tags": [
+          "captcha"
+        ]
+      }
+    },
+    "/api/coupon/v1/code/use": {
+      "post": {
+        "summary": "使用兑换码",
+        "operationId": "UseCouponCode",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/UseCouponCodeResp"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " ========== 兑换码 ==========",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UseCouponCodeReq"
+            }
+          }
+        ],
+        "tags": [
+          "code"
+        ]
+      }
+    },
+    "/api/coupon/v1/page": {
+      "get": {
+        "summary": "观影券分页列表",
+        "operationId": "CouponPage",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/CouponPageResp"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "mid",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pn",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int32",
+            "default": "1"
+          },
+          {
+            "name": "ps",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int32",
+            "default": "20"
+          }
+        ],
+        "tags": [
+          "coupon"
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ]
+      }
+    },
+    "/api/coupon/v1/user/list": {
+      "get": {
+        "summary": "用户观影券列表",
+        "operationId": "UserCoupon",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/UserCouponResp"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "mid",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "coupon_type",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "coupon"
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ]
+      }
+    },
+    "/api/coupon/v1/video/count": {
+      "get": {
+        "summary": "观影券数量",
+        "operationId": "VideoCouponCount",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/VideoCouponCountResp"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "mid",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "coupon_type",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "coupon"
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "AllowanceListReq": {
+      "type": "object",
+      "properties": {
+        "mid": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "state": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "AllowanceListReq",
+      "required": [
+        "mid",
+        "state"
+      ]
+    },
+    "AllowanceListResp": {
+      "type": "object",
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CouponAllowancePanelInfo"
+          }
+        }
+      },
+      "title": "AllowanceListResp",
+      "required": [
+        "list"
+      ]
+    },
+    "CancelAllowanceCouponReq": {
+      "type": "object",
+      "properties": {
+        "mid": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "coupon_token": {
+          "type": "string"
+        }
+      },
+      "title": "CancelAllowanceCouponReq",
+      "required": [
+        "mid",
+        "coupon_token"
+      ]
+    },
+    "CaptchaTokenReq": {
+      "type": "object",
+      "title": "CaptchaTokenReq"
+    },
+    "CaptchaTokenResp": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      },
+      "title": "CaptchaTokenResp",
+      "required": [
+        "token",
+        "url"
+      ]
+    },
+    "CouponAllowancePanelInfo": {
+      "type": "object",
+      "properties": {
+        "coupon_token": {
+          "type": "string"
+        },
+        "coupon_amount": {
+          "type": "number",
+          "format": "double"
+        },
+        "state": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "full_limit_explain": {
+          "type": "string"
+        },
+        "scope_explain": {
+          "type": "string"
+        },
+        "full_amount": {
+          "type": "number",
+          "format": "double"
+        },
+        "coupon_discount_price": {
+          "type": "number",
+          "format": "double"
+        },
+        "start_time": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "expire_time": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "selected": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "disables_explains": {
+          "type": "string"
+        },
+        "order_no": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "usable": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "CouponAllowancePanelInfo",
+      "required": [
+        "coupon_token",
+        "coupon_amount",
+        "state",
+        "full_limit_explain",
+        "scope_explain",
+        "full_amount",
+        "coupon_discount_price",
+        "start_time",
+        "expire_time",
+        "selected",
+        "disables_explains",
+        "order_no",
+        "name",
+        "usable"
+      ]
+    },
+    "CouponInfoItem": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "coupon_token": {
+          "type": "string"
+        },
+        "state": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "start_time": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "expire_time": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "CouponInfoItem",
+      "required": [
+        "id",
+        "coupon_token",
+        "state",
+        "start_time",
+        "expire_time"
+      ]
+    },
+    "CouponPageItem": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "title": {
+          "type": "string"
+        },
+        "time": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "ref_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "CouponPageItem",
+      "required": [
+        "id",
+        "title",
+        "time",
+        "ref_id"
+      ]
+    },
+    "CouponPageReq": {
+      "type": "object",
+      "properties": {
+        "mid": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "state": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pn": {
+          "type": "integer",
+          "format": "int32",
+          "default": "1"
+        },
+        "ps": {
+          "type": "integer",
+          "format": "int32",
+          "default": "20"
+        }
+      },
+      "title": "CouponPageReq",
+      "required": [
+        "mid",
+        "state",
+        "pn",
+        "ps"
+      ]
+    },
+    "CouponPageResp": {
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CouponPageItem"
+          }
+        }
+      },
+      "title": "CouponPageResp",
+      "required": [
+        "count",
+        "list"
+      ]
+    },
+    "PriceInfo": {
+      "type": "object",
+      "properties": {
+        "price": {
+          "type": "number",
+          "format": "double"
+        },
+        "plat": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "prod_lim_month": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "prod_lim_renewal": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "PriceInfo",
+      "required": [
+        "price",
+        "plat",
+        "prod_lim_month",
+        "prod_lim_renewal"
+      ]
+    },
+    "ReceiveAllowanceReq": {
+      "type": "object",
+      "properties": {
+        "mid": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "batch_token": {
+          "type": "string"
+        },
+        "order_no": {
+          "type": "string"
+        },
+        "appkey": {
+          "type": "string"
+        }
+      },
+      "title": "ReceiveAllowanceReq",
+      "required": [
+        "mid",
+        "batch_token",
+        "order_no",
+        "appkey"
+      ]
+    },
+    "ReceiveAllowanceResp": {
+      "type": "object",
+      "properties": {
+        "coupon_token": {
+          "type": "string"
+        }
+      },
+      "title": "ReceiveAllowanceResp",
+      "required": [
+        "coupon_token"
+      ]
+    },
+    "UsableAllowanceCouponV2Req": {
+      "type": "object",
+      "properties": {
+        "mid": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "price_info": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PriceInfo"
+          }
+        }
+      },
+      "title": "UsableAllowanceCouponV2Req",
+      "required": [
+        "mid",
+        "price_info"
+      ]
+    },
+    "UsableAllowanceCouponV2Resp": {
+      "type": "object",
+      "properties": {
+        "coupon_tip": {
+          "type": "string"
+        },
+        "coupon_info": {
+          "$ref": "#/definitions/CouponAllowancePanelInfo"
+        }
+      },
+      "title": "UsableAllowanceCouponV2Resp",
+      "required": [
+        "coupon_tip",
+        "coupon_info"
+      ]
+    },
+    "UseAllowanceCouponReq": {
+      "type": "object",
+      "properties": {
+        "mid": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "coupon_token": {
+          "type": "string"
+        },
+        "remark": {
+          "type": "string"
+        },
+        "order_no": {
+          "type": "string"
+        },
+        "price": {
+          "type": "number",
+          "format": "double"
+        },
+        "platform": {
+          "type": "string",
+          "default": "pc"
+        },
+        "prod_lim_month": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "prod_lim_renewal": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "UseAllowanceCouponReq",
+      "required": [
+        "mid",
+        "coupon_token",
+        "remark",
+        "order_no",
+        "price",
+        "platform"
+      ]
+    },
+    "UseCouponCodeReq": {
+      "type": "object",
+      "properties": {
+        "mid": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "token": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "verify": {
+          "type": "string"
+        }
+      },
+      "title": "UseCouponCodeReq",
+      "required": [
+        "mid",
+        "token",
+        "code",
+        "verify"
+      ]
+    },
+    "UseCouponCodeResp": {
+      "type": "object",
+      "properties": {
+        "coupon_token": {
+          "type": "string"
+        },
+        "coupon_amount": {
+          "type": "number",
+          "format": "double"
+        },
+        "full_amount": {
+          "type": "number",
+          "format": "double"
+        },
+        "platform_limit_explain": {
+          "type": "string"
+        },
+        "product_limit_month": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "product_limit_renewal": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "UseCouponCodeResp",
+      "required": [
+        "coupon_token",
+        "coupon_amount",
+        "full_amount",
+        "platform_limit_explain",
+        "product_limit_month",
+        "product_limit_renewal"
+      ]
+    },
+    "UserCouponReq": {
+      "type": "object",
+      "properties": {
+        "mid": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "coupon_type": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "UserCouponReq",
+      "required": [
+        "mid",
+        "coupon_type"
+      ]
+    },
+    "UserCouponResp": {
+      "type": "object",
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CouponInfoItem"
+          }
+        }
+      },
+      "title": "UserCouponResp",
+      "required": [
+        "list"
+      ]
+    },
+    "VideoCouponCountReq": {
+      "type": "object",
+      "properties": {
+        "mid": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "coupon_type": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "VideoCouponCountReq",
+      "required": [
+        "mid",
+        "coupon_type"
+      ]
+    },
+    "VideoCouponCountResp": {
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "VideoCouponCountResp",
+      "required": [
+        "count"
+      ]
+    }
+  },
+  "securityDefinitions": {
+    "apiKey": {
+      "type": "apiKey",
+      "description": "Enter JWT Bearer token **_only_**",
+      "name": "Authorization",
+      "in": "header"
+    }
+  }
+}
