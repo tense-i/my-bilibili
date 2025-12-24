@@ -1,0 +1,323 @@
+syntax = "proto3";
+
+package coupon;
+option go_package = "./coupon";
+
+// ==================== 服务定义 ====================
+service Coupon {
+  // ========== 验证码相关 ==========
+  // 获取验证码Token
+  rpc CaptchaToken(CaptchaTokenReq) returns(CaptchaTokenResp);
+  
+  // ========== 兑换码相关 ==========
+  // 使用兑换码
+  rpc UseCouponCode(UseCouponCodeReq) returns(UseCouponCodeResp);
+  
+  // ========== 代金券相关 ==========
+  // 获取可用代金券V2
+  rpc UsableAllowanceCouponV2(UsableAllowanceCouponV2Req) returns(UsableAllowanceCouponV2Resp);
+  // 使用代金券
+  rpc UseAllowanceCoupon(UseAllowanceCouponReq) returns(UseAllowanceCouponResp);
+  // 取消使用代金券
+  rpc CancelAllowanceCoupon(CancelAllowanceCouponReq) returns(CancelAllowanceCouponResp);
+  // 代金券使用通知（支付结果回调）
+  rpc AllowanceCouponNotify(AllowanceCouponNotifyReq) returns(AllowanceCouponNotifyResp);
+  // 代金券列表
+  rpc AllowanceList(AllowanceListReq) returns(AllowanceListResp);
+  // 代金券详情
+  rpc AllowanceInfo(AllowanceInfoReq) returns(AllowanceInfoResp);
+  // 领取代金券
+  rpc ReceiveAllowance(ReceiveAllowanceReq) returns(ReceiveAllowanceResp);
+  // 同步检查代金券是否可用
+  rpc UseNotify(UseNotifyReq) returns(UseNotifyResp);
+  
+  // ========== 观影券相关 ==========
+  // 用户观影券列表
+  rpc UserCoupon(UserCouponReq) returns(UserCouponResp);
+  // 使用观影券
+  rpc UseCoupon(UseCouponReq) returns(UseCouponResp);
+  // 观影券详情
+  rpc CouponInfo(CouponInfoReq) returns(CouponInfoResp);
+  // 观影券分页列表
+  rpc CouponPage(CouponPageReq) returns(CouponPageResp);
+  // 观影券数量
+  rpc VideoCouponCount(VideoCouponCountReq) returns(VideoCouponCountResp);
+  
+  // ========== 发放相关 ==========
+  // 发放优惠券
+  rpc SalaryCoupon(SalaryCouponReq) returns(SalaryCouponResp);
+  // 第三方发放优惠券
+  rpc SalaryCouponForThird(SalaryCouponForThirdReq) returns(SalaryCouponForThirdResp);
+  
+  // ========== 批次相关 ==========
+  // 批次信息
+  rpc BatchInfo(BatchInfoReq) returns(BatchInfoResp);
+}
+
+// ==================== 通用消息 ====================
+message PriceInfo {
+  double price = 1;
+  int64 plat = 2;
+  int32 prod_lim_month = 3;
+  int32 prod_lim_renewal = 4;
+}
+
+message CouponAllowancePanelInfo {
+  string coupon_token = 1;
+  double coupon_amount = 2;
+  int32 state = 3;
+  string full_limit_explain = 4;
+  string scope_explain = 5;
+  double full_amount = 6;
+  double coupon_discount_price = 7;
+  int64 start_time = 8;
+  int64 expire_time = 9;
+  int32 selected = 10;
+  string disables_explains = 11;
+  string order_no = 12;
+  string name = 13;
+  int32 usable = 14;
+}
+
+
+message CouponInfo {
+  int64 id = 1;
+  string coupon_token = 2;
+  int64 mid = 3;
+  int32 state = 4;
+  int64 start_time = 5;
+  int64 expire_time = 6;
+  int64 origin = 7;
+  int64 coupon_type = 8;
+  string order_no = 9;
+  int64 oid = 10;
+  string remark = 11;
+}
+
+// ==================== 验证码 ====================
+message CaptchaTokenReq {
+  string ip = 1;
+}
+
+message CaptchaTokenResp {
+  string token = 1;
+  string url = 2;
+}
+
+// ==================== 兑换码 ====================
+message UseCouponCodeReq {
+  string token = 1;
+  string code = 2;
+  string verify = 3;
+  string ip = 4;
+  int64 mid = 5;
+}
+
+message UseCouponCodeResp {
+  string coupon_token = 1;
+  double coupon_amount = 2;
+  double full_amount = 3;
+  string platform_limit_explain = 4;
+  int32 product_limit_month = 5;
+  int32 product_limit_renewal = 6;
+}
+
+// ==================== 代金券 ====================
+message UsableAllowanceCouponV2Req {
+  int64 mid = 1;
+  repeated PriceInfo price_info = 2;
+}
+
+message UsableAllowanceCouponV2Resp {
+  string coupon_tip = 1;
+  CouponAllowancePanelInfo coupon_info = 2;
+}
+
+message UseAllowanceCouponReq {
+  int64 mid = 1;
+  string coupon_token = 2;
+  string remark = 3;
+  string order_no = 4;
+  double price = 5;
+  string platform = 6;
+  int32 prod_lim_month = 7;
+  int32 prod_lim_renewal = 8;
+}
+
+message UseAllowanceCouponResp {}
+
+message CancelAllowanceCouponReq {
+  int64 mid = 1;
+  string coupon_token = 2;
+}
+
+message CancelAllowanceCouponResp {}
+
+message AllowanceCouponNotifyReq {
+  int64 mid = 1;
+  string order_no = 2;
+  int32 pay_state = 3;
+}
+
+message AllowanceCouponNotifyResp {}
+
+message AllowanceListReq {
+  int64 mid = 1;
+  int32 state = 2;
+}
+
+message AllowanceListResp {
+  repeated CouponAllowancePanelInfo list = 1;
+}
+
+message AllowanceInfoReq {
+  int64 mid = 1;
+  string coupon_token = 2;
+}
+
+message AllowanceInfoResp {
+  int64 id = 1;
+  string coupon_token = 2;
+  int64 mid = 3;
+  int32 state = 4;
+  int64 start_time = 5;
+  int64 expire_time = 6;
+  double amount = 7;
+  double full_amount = 8;
+  string batch_token = 9;
+}
+
+message ReceiveAllowanceReq {
+  int64 mid = 1;
+  string batch_token = 2;
+  string order_no = 3;
+  string appkey = 4;
+}
+
+message ReceiveAllowanceResp {
+  string coupon_token = 1;
+}
+
+message UseNotifyReq {
+  int64 mid = 1;
+  string order_no = 2;
+}
+
+message UseNotifyResp {
+  string coupon_token = 1;
+  double amount = 2;
+  double full_amount = 3;
+}
+
+
+// ==================== 观影券 ====================
+message UserCouponReq {
+  int64 mid = 1;
+  int32 coupon_type = 2;
+}
+
+message UserCouponResp {
+  repeated CouponInfo list = 1;
+}
+
+message UseCouponReq {
+  int64 mid = 1;
+  int64 oid = 2;
+  string remark = 3;
+  string order_no = 4;
+  int32 coupon_type = 5;
+  int64 use_ver = 6;
+}
+
+message UseCouponResp {
+  int32 ret = 1;
+  string coupon_token = 2;
+}
+
+message CouponInfoReq {
+  int64 mid = 1;
+  string coupon_token = 2;
+}
+
+message CouponInfoResp {
+  CouponInfo info = 1;
+}
+
+message CouponPageReq {
+  int64 mid = 1;
+  int32 state = 2;
+  int32 pn = 3;
+  int32 ps = 4;
+}
+
+message CouponPageResp {
+  int64 count = 1;
+  repeated CouponPageItem list = 2;
+}
+
+message CouponPageItem {
+  int64 id = 1;
+  string title = 2;
+  int64 time = 3;
+  int64 ref_id = 4;
+  string tips = 5;
+  int64 count = 6;
+}
+
+message VideoCouponCountReq {
+  int64 mid = 1;
+  int32 coupon_type = 2;
+}
+
+message VideoCouponCountResp {
+  int32 count = 1;
+}
+
+// ==================== 发放 ====================
+message SalaryCouponReq {
+  int64 mid = 1;
+  int64 coupon_type = 2;
+  int32 count = 3;
+  string batch_token = 4;
+  int64 app_id = 5;
+  int64 origin = 6;
+}
+
+message SalaryCouponResp {}
+
+message SalaryCouponForThirdReq {
+  int64 mid = 1;
+  int64 coupon_type = 2;
+  int32 count = 3;
+  string batch_token = 4;
+  int64 app_id = 5;
+  string unique_no = 6;
+}
+
+message SalaryCouponForThirdResp {
+  double amount = 1;
+  double full_amount = 2;
+  string description = 3;
+}
+
+// ==================== 批次 ====================
+message BatchInfoReq {
+  string batch_token = 1;
+}
+
+message BatchInfoResp {
+  int64 id = 1;
+  int64 app_id = 2;
+  string name = 3;
+  string batch_token = 4;
+  int64 max_count = 5;
+  int64 current_count = 6;
+  int64 start_time = 7;
+  int64 expire_time = 8;
+  int64 expire_day = 9;
+  int64 limit_count = 10;
+  double full_amount = 11;
+  double amount = 12;
+  int32 state = 13;
+  int32 coupon_type = 14;
+}
