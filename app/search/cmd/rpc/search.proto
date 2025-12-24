@@ -1,0 +1,169 @@
+syntax = "proto3";
+
+package search;
+option go_package = "./search";
+
+// ==================== 搜索服务 ====================
+service Search {
+  // 弹幕搜索
+  rpc DmSearch(DmSearchReq) returns(SearchResp);
+  
+  // PGC番剧搜索
+  rpc PgcMediaSearch(PgcMediaSearchReq) returns(SearchResp);
+  
+  // 评论记录搜索
+  rpc ReplyRecordSearch(ReplyRecordSearchReq) returns(SearchResp);
+  
+  // 弹幕历史搜索
+  rpc DmHistorySearch(DmHistorySearchReq) returns(SearchResp);
+  
+  // 弹幕日期搜索
+  rpc DmDateSearch(DmDateSearchReq) returns(SearchResp);
+  
+  // 弹幕索引更新
+  rpc DmUpdate(DmUpdateReq) returns(UpdateResp);
+  
+  // PGC索引更新
+  rpc PgcUpdate(PgcUpdateReq) returns(UpdateResp);
+  
+  // 评论索引更新
+  rpc ReplyUpdate(ReplyUpdateReq) returns(UpdateResp);
+}
+
+// ==================== 通用搜索参数 ====================
+message BasicSearchParams {
+  string app_id = 1;              // 应用ID
+  string kw = 2;                  // 搜索关键词
+  repeated string kw_fields = 3;  // 关键词搜索字段
+  repeated string order = 4;      // 排序字段
+  repeated string sort = 5;       // 排序方式 asc/desc
+  int32 pn = 6;                   // 页码
+  int32 ps = 7;                   // 每页数量
+  bool debug = 8;                 // 调试模式
+}
+
+// ==================== 弹幕搜索 ====================
+message DmSearchReq {
+  BasicSearchParams bsp = 1;      // 基础搜索参数
+  int64 oid = 2;                  // 对象ID
+  int64 mid = 3;                  // 用户ID
+  int32 mode = 4;                 // 弹幕模式
+  int32 pool = 5;                 // 弹幕池
+  int32 progress = 6;             // 进度
+  repeated int32 states = 7;      // 状态列表
+  int32 type = 8;                 // 类型
+  repeated int32 attr_format = 9; // 属性格式
+  string ctime_from = 10;         // 创建时间起始
+  string ctime_to = 11;           // 创建时间结束
+}
+
+// ==================== PGC番剧搜索 ====================
+message PgcMediaSearchReq {
+  BasicSearchParams bsp = 1;           // 基础搜索参数
+  repeated int64 media_ids = 2;        // 媒体ID列表
+  repeated int64 season_ids = 3;       // 季度ID列表
+  repeated int64 season_types = 4;     // 季度类型列表
+  repeated int64 style_ids = 5;        // 风格ID列表
+  int32 status = 6;                    // 状态
+  string release_date_from = 7;        // 发布日期起始
+  string release_date_to = 8;          // 发布日期结束
+  int32 season_id_from = 9;            // 季度ID起始
+  int32 season_id_to = 10;             // 季度ID结束
+  repeated int64 producer_ids = 11;    // 制作方ID列表
+  int32 is_deleted = 12;               // 是否删除
+  repeated string area_ids = 13;       // 地区ID列表
+  int32 score_from = 14;               // 评分起始
+  int32 score_to = 15;                 // 评分结束
+  string is_finish = 16;               // 是否完结
+  repeated int64 season_versions = 17; // 季度版本列表
+  repeated int64 season_statuses = 18; // 季度状态列表
+  string pub_time_from = 19;           // 发布时间起始
+  string pub_time_to = 20;             // 发布时间结束
+  repeated int64 season_months = 21;   // 季度月份列表
+  string latest_time_from = 22;        // 最新时间起始
+  string latest_time_to = 23;          // 最新时间结束
+  repeated string copyright_infos = 24;// 版权信息列表
+  string ctime_from = 25;              // 创建时间起始
+  string ctime_to = 26;                // 创建时间结束
+  string mtime_from = 27;              // 修改时间起始
+  string mtime_to = 28;                // 修改时间结束
+}
+
+// ==================== 评论记录搜索 ====================
+message ReplyRecordSearchReq {
+  BasicSearchParams bsp = 1;      // 基础搜索参数
+  int64 mid = 2;                  // 用户ID
+  repeated int64 types = 3;       // 类型列表
+  repeated int64 states = 4;      // 状态列表
+  string ctime_from = 5;          // 创建时间起始
+  string ctime_to = 6;            // 创建时间结束
+}
+
+// ==================== 弹幕历史搜索 ====================
+message DmHistorySearchReq {
+  BasicSearchParams bsp = 1;      // 基础搜索参数
+  int64 oid = 2;                  // 对象ID
+  repeated int64 states = 3;      // 状态列表
+  string ctime_from = 4;          // 创建时间起始
+  string ctime_to = 5;            // 创建时间结束
+}
+
+// ==================== 弹幕日期搜索 ====================
+message DmDateSearchReq {
+  BasicSearchParams bsp = 1;      // 基础搜索参数
+  int64 oid = 2;                  // 对象ID
+  string month = 3;               // 月份 (格式: 2024-01)
+  string month_from = 4;          // 月份起始
+  string month_to = 5;            // 月份结束
+}
+
+// ==================== 搜索响应 ====================
+message SearchResp {
+  string order = 1;               // 排序字段
+  string sort = 2;                // 排序方式
+  repeated bytes result = 3;      // 搜索结果(JSON)
+  Page page = 4;                  // 分页信息
+  string debug = 5;               // 调试信息
+}
+
+message Page {
+  int32 pn = 1;                   // 页码
+  int32 ps = 2;                   // 每页数量
+  int64 total = 3;                // 总数
+}
+
+// ==================== 索引更新请求 ====================
+message DmUpdateReq {
+  repeated DmUpdateItem items = 1;
+}
+
+message DmUpdateItem {
+  int64 id = 1;                   // 弹幕ID
+  int64 oid = 2;                  // 对象ID
+  map<string, string> field = 3;  // 更新字段
+}
+
+message PgcUpdateReq {
+  repeated PgcUpdateItem items = 1;
+}
+
+message PgcUpdateItem {
+  int64 media_id = 1;             // 媒体ID
+  map<string, string> field = 2;  // 更新字段
+}
+
+message ReplyUpdateReq {
+  repeated ReplyUpdateItem items = 1;
+}
+
+message ReplyUpdateItem {
+  int64 id = 1;                   // 评论ID
+  int64 oid = 2;                  // 对象ID
+  int64 mid = 3;                  // 用户ID
+  int32 state = 4;                // 状态
+}
+
+message UpdateResp {
+  bool success = 1;               // 是否成功
+  string message = 2;             // 消息
+}
