@@ -1,0 +1,27 @@
+Name: coupon.rpc
+ListenOn: 127.0.0.1:9085
+Mode: dev
+
+Etcd:
+  Hosts:
+    - 127.0.0.1:23790
+  Key: coupon.rpc
+
+Mysql:
+  DataSource: root:root123456@tcp(127.0.0.1:33060)/mybilibili?charset=utf8mb4&parseTime=true&loc=Local
+
+RedisConf:
+  Host: 127.0.0.1:63790
+  Type: node
+  Pass: "redis123456"
+
+CacheRedis:
+  - Host: 127.0.0.1:63790
+    Type: node
+    Pass: "redis123456"
+
+Telemetry:
+  Name: coupon.rpc
+  Endpoint: http://127.0.0.1:14268/api/traces
+  Sampler: 1.0
+  Batcher: jaeger
