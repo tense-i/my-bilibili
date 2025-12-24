@@ -1,0 +1,207 @@
+syntax = "v1"
+
+info (
+	title:   "搜索服务 API"
+	desc:    "B站搜索服务HTTP接口"
+	author:  "mybilibili"
+	version: "v1.0.0"
+)
+
+// ==================== 通用数据结构 ====================
+type Page {
+	Pn    int32 `json:"num"`
+	Ps    int32 `json:"size"`
+	Total int64 `json:"total"`
+}
+
+type SearchResp {
+	Order  string   `json:"order"`
+	Sort   string   `json:"sort"`
+	Result []string `json:"result"`
+	Page   Page     `json:"page"`
+	Debug  string   `json:"debug,omitempty"`
+}
+
+type UpdateResp {
+	Success bool   `json:"success"`
+	Message string `json:"message"`
+}
+
+// ==================== 弹幕搜索 ====================
+type DmSearchReq {
+	AppId      string `form:"appid,optional"`
+	Kw         string `form:"kw,optional"`
+	KwFields   string `form:"kw_fields,optional"`
+	Order      string `form:"order,optional"`
+	Sort       string `form:"sort,optional,default=desc"`
+	Pn         int32  `form:"pn,optional,default=1"`
+	Ps         int32  `form:"ps,optional,default=50"`
+	Debug      bool   `form:"debug,optional"`
+	Oid        int64  `form:"oid,optional,default=-1"`
+	Mid        int64  `form:"mid,optional,default=-1"`
+	Mode       int32  `form:"mode,optional,default=-1"`
+	Pool       int32  `form:"pool,optional,default=-1"`
+	Progress   int32  `form:"progress,optional,default=-1"`
+	States     string `form:"states,optional"`
+	Type       int32  `form:"type,optional,default=-1"`
+	AttrFormat string `form:"attr_format,optional"`
+	CtimeFrom  string `form:"ctime_from,optional"`
+	CtimeTo    string `form:"ctime_to,optional"`
+}
+
+// ==================== PGC番剧搜索 ====================
+type PgcMediaSearchReq {
+	AppId           string `form:"appid,optional"`
+	Kw              string `form:"kw,optional"`
+	Order           string `form:"order,optional"`
+	Sort            string `form:"sort,optional,default=desc"`
+	Pn              int32  `form:"pn,optional,default=1"`
+	Ps              int32  `form:"ps,optional,default=50"`
+	Debug           bool   `form:"debug,optional"`
+	MediaIds        string `form:"media_ids,optional"`
+	SeasonIds       string `form:"season_ids,optional"`
+	SeasonTypes     string `form:"season_types,optional"`
+	StyleIds        string `form:"style_ids,optional"`
+	Status          int32  `form:"status,optional,default=-1000"`
+	ReleaseDateFrom string `form:"release_date_from,optional"`
+	ReleaseDateTo   string `form:"release_date_to,optional"`
+	SeasonIdFrom    int32  `form:"season_id_from,optional"`
+	SeasonIdTo      int32  `form:"season_id_to,optional"`
+	ProducerIds     string `form:"producer_ids,optional"`
+	IsDeleted       int32  `form:"is_deleted,optional,default=0"`
+	AreaIds         string `form:"area_ids,optional"`
+	ScoreFrom       int32  `form:"score_from,optional"`
+	ScoreTo         int32  `form:"score_to,optional"`
+	IsFinish        string `form:"is_finish,optional"`
+	SeasonVersions  string `form:"season_versions,optional"`
+	SeasonStatuses  string `form:"season_statuses,optional"`
+	PubTimeFrom     string `form:"pub_time_from,optional"`
+	PubTimeTo       string `form:"pub_time_to,optional"`
+	SeasonMonths    string `form:"season_months,optional"`
+	LatestTimeFrom  string `form:"latest_time_from,optional"`
+	LatestTimeTo    string `form:"latest_time_to,optional"`
+	CopyrightInfos  string `form:"copyright_infos,optional"`
+	CtimeFrom       string `form:"ctime_from,optional"`
+	CtimeTo         string `form:"ctime_to,optional"`
+	MtimeFrom       string `form:"mtime_from,optional"`
+	MtimeTo         string `form:"mtime_to,optional"`
+}
+
+// ==================== 评论记录搜索 ====================
+type ReplyRecordSearchReq {
+	AppId     string `form:"appid,optional"`
+	Kw        string `form:"kw,optional"`
+	Order     string `form:"order,optional"`
+	Sort      string `form:"sort,optional,default=desc"`
+	Pn        int32  `form:"pn,optional,default=1"`
+	Ps        int32  `form:"ps,optional,default=50"`
+	Debug     bool   `form:"debug,optional"`
+	Mid       int64  `form:"mid"`
+	Types     string `form:"types,optional"`
+	States    string `form:"states,optional"`
+	CtimeFrom string `form:"ctime_from,optional"`
+	CtimeTo   string `form:"ctime_to,optional"`
+}
+
+// ==================== 弹幕历史搜索 ====================
+type DmHistorySearchReq {
+	AppId     string `form:"appid,optional"`
+	Kw        string `form:"kw,optional"`
+	KwFields  string `form:"kw_fields,optional"`
+	Order     string `form:"order,optional"`
+	Sort      string `form:"sort,optional,default=desc"`
+	Pn        int32  `form:"pn,optional,default=1"`
+	Ps        int32  `form:"ps,optional,default=50"`
+	Debug     bool   `form:"debug,optional"`
+	Oid       int64  `form:"oid,default=-1"`
+	States    string `form:"states,optional"`
+	CtimeFrom string `form:"ctime_from,optional"`
+	CtimeTo   string `form:"ctime_to,optional"`
+}
+
+// ==================== 弹幕日期搜索 ====================
+type DmDateSearchReq {
+	AppId     string `form:"appid,optional"`
+	Kw        string `form:"kw,optional"`
+	KwFields  string `form:"kw_fields,optional"`
+	Order     string `form:"order,optional"`
+	Sort      string `form:"sort,optional,default=desc"`
+	Pn        int32  `form:"pn,optional,default=1"`
+	Ps        int32  `form:"ps,optional,default=50"`
+	Debug     bool   `form:"debug,optional"`
+	Oid       int64  `form:"oid,default=-1"`
+	Month     string `form:"month,optional"`
+	MonthFrom string `form:"month_from,optional"`
+	MonthTo   string `form:"month_to,optional"`
+}
+
+// ==================== 索引更新请求 ====================
+type DmUpdateReq {
+	Items []DmUpdateItem `json:"items"`
+}
+
+type DmUpdateItem {
+	Id    int64             `json:"id"`
+	Oid   int64             `json:"oid"`
+	Field map[string]string `json:"field"`
+}
+
+type PgcUpdateReq {
+	Items []PgcUpdateItem `json:"items"`
+}
+
+type PgcUpdateItem {
+	MediaId int64             `json:"media_id"`
+	Field   map[string]string `json:"field"`
+}
+
+type ReplyUpdateReq {
+	Items []ReplyUpdateItem `json:"items"`
+}
+
+type ReplyUpdateItem {
+	Id    int64 `json:"id"`
+	Oid   int64 `json:"oid"`
+	Mid   int64 `json:"mid"`
+	State int32 `json:"state"`
+}
+
+// ==================== 路由定义 ====================
+@server (
+	prefix: /x/internal/search
+	group:  search
+)
+service search {
+	@doc "弹幕搜索"
+	@handler DmSearch
+	get /dm (DmSearchReq) returns (SearchResp)
+
+	@doc "PGC番剧搜索"
+	@handler PgcMediaSearch
+	get /pgc (PgcMediaSearchReq) returns (SearchResp)
+
+	@doc "评论记录搜索"
+	@handler ReplyRecordSearch
+	get /reply (ReplyRecordSearchReq) returns (SearchResp)
+
+	@doc "弹幕历史搜索"
+	@handler DmHistorySearch
+	get /dmhistory (DmHistorySearchReq) returns (SearchResp)
+
+	@doc "弹幕日期搜索"
+	@handler DmDateSearch
+	get /dm/date (DmDateSearchReq) returns (SearchResp)
+
+	@doc "弹幕索引更新"
+	@handler DmUpdate
+	post /dm/update (DmUpdateReq) returns (UpdateResp)
+
+	@doc "PGC索引更新"
+	@handler PgcUpdate
+	post /pgc/update (PgcUpdateReq) returns (UpdateResp)
+
+	@doc "评论索引更新"
+	@handler ReplyUpdate
+	post /reply/update (ReplyUpdateReq) returns (UpdateResp)
+}
+

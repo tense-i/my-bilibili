@@ -1,0 +1,16 @@
+Name: search-api
+Host: 0.0.0.0
+Port: 8888
+
+# RPC 服务配置
+SearchRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:23790
+    Key: search.rpc
+
+# 日志配置
+Log:
+  ServiceName: search-api
+  Mode: console
+  Level: info
