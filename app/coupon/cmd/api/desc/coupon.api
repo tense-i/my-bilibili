@@ -1,0 +1,217 @@
+syntax = "v1"
+
+info (
+	title:   "Coupon API"
+	desc:    "优惠券服务 API"
+	author:  "mybilibili"
+	version: "v1.0.0"
+)
+
+// ==================== 数据结构 ====================
+type PriceInfo {
+	Price          float64 `json:"price"`
+	Plat           int64   `json:"plat"`
+	ProdLimMonth   int32   `json:"prod_lim_month"`
+	ProdLimRenewal int32   `json:"prod_lim_renewal"`
+}
+
+type CouponAllowancePanelInfo {
+	CouponToken         string  `json:"coupon_token"`
+	CouponAmount        float64 `json:"coupon_amount"`
+	State               int32   `json:"state"`
+	FullLimitExplain    string  `json:"full_limit_explain"`
+	ScopeExplain        string  `json:"scope_explain"`
+	FullAmount          float64 `json:"full_amount"`
+	CouponDiscountPrice float64 `json:"coupon_discount_price"`
+	StartTime           int64   `json:"start_time"`
+	ExpireTime          int64   `json:"expire_time"`
+	Selected            int32   `json:"selected"`
+	DisablesExplains    string  `json:"disables_explains"`
+	OrderNo             string  `json:"order_no"`
+	Name                string  `json:"name"`
+	Usable              int32   `json:"usable"`
+}
+
+// ========== 验证码 ==========
+type CaptchaTokenReq {}
+
+type CaptchaTokenResp {
+	Token string `json:"token"`
+	Url   string `json:"url"`
+}
+
+// ========== 兑换码 ==========
+type UseCouponCodeReq {
+	Mid    int64  `json:"mid"`
+	Token  string `json:"token"`
+	Code   string `json:"code"`
+	Verify string `json:"verify"`
+}
+
+type UseCouponCodeResp {
+	CouponToken          string  `json:"coupon_token"`
+	CouponAmount         float64 `json:"coupon_amount"`
+	FullAmount           float64 `json:"full_amount"`
+	PlatformLimitExplain string  `json:"platform_limit_explain"`
+	ProductLimitMonth    int32   `json:"product_limit_month"`
+	ProductLimitRenewal  int32   `json:"product_limit_renewal"`
+}
+
+// ========== 代金券 ==========
+type UsableAllowanceCouponV2Req {
+	Mid       int64       `json:"mid"`
+	PriceInfo []PriceInfo `json:"price_info"`
+}
+
+type UsableAllowanceCouponV2Resp {
+	CouponTip  string                    `json:"coupon_tip"`
+	CouponInfo *CouponAllowancePanelInfo `json:"coupon_info"`
+}
+
+type UseAllowanceCouponReq {
+	Mid            int64   `json:"mid"`
+	CouponToken    string  `json:"coupon_token"`
+	Remark         string  `json:"remark"`
+	OrderNo        string  `json:"order_no"`
+	Price          float64 `json:"price"`
+	Platform       string  `json:"platform,default=pc"`
+	ProdLimMonth   int32   `json:"prod_lim_month,optional"`
+	ProdLimRenewal int32   `json:"prod_lim_renewal,optional"`
+}
+
+type AllowanceListReq {
+	Mid   int64 `form:"mid"`
+	State int32 `form:"state"`
+}
+
+type AllowanceListResp {
+	List []*CouponAllowancePanelInfo `json:"list"`
+}
+
+type CancelAllowanceCouponReq {
+	Mid         int64  `json:"mid"`
+	CouponToken string `json:"coupon_token"`
+}
+
+type ReceiveAllowanceReq {
+	Mid        int64  `json:"mid"`
+	BatchToken string `json:"batch_token"`
+	OrderNo    string `json:"order_no"`
+	Appkey     string `json:"appkey"`
+}
+
+type ReceiveAllowanceResp {
+	CouponToken string `json:"coupon_token"`
+}
+
+// ========== 观影券 ==========
+type UserCouponReq {
+	Mid        int64 `form:"mid"`
+	CouponType int32 `form:"coupon_type"`
+}
+
+type CouponInfoItem {
+	Id          int64  `json:"id"`
+	CouponToken string `json:"coupon_token"`
+	State       int32  `json:"state"`
+	StartTime   int64  `json:"start_time"`
+	ExpireTime  int64  `json:"expire_time"`
+}
+
+type UserCouponResp {
+	List []*CouponInfoItem `json:"list"`
+}
+
+type CouponPageReq {
+	Mid   int64 `form:"mid"`
+	State int32 `form:"state"`
+	Pn    int32 `form:"pn,default=1"`
+	Ps    int32 `form:"ps,default=20"`
+}
+
+type CouponPageItem {
+	Id    int64  `json:"id"`
+	Title string `json:"title"`
+	Time  int64  `json:"time"`
+	RefId int64  `json:"ref_id"`
+}
+
+type CouponPageResp {
+	Count int64             `json:"count"`
+	List  []*CouponPageItem `json:"list"`
+}
+
+type VideoCouponCountReq {
+	Mid        int64 `form:"mid"`
+	CouponType int32 `form:"coupon_type"`
+}
+
+type VideoCouponCountResp {
+	Count int32 `json:"count"`
+}
+
+// ==================== 路由定义 ====================
+@server (
+	prefix: /api/coupon/v1
+	group:  captcha
+)
+service coupon {
+	@doc "获取验证码Token"
+	@handler CaptchaToken
+	get /captcha/token (CaptchaTokenReq) returns (CaptchaTokenResp)
+}
+
+@server (
+	prefix: /api/coupon/v1
+	group:  code
+)
+service coupon {
+	@doc "使用兑换码"
+	@handler UseCouponCode
+	post /code/use (UseCouponCodeReq) returns (UseCouponCodeResp)
+}
+
+@server (
+	prefix: /api/coupon/v1
+	group:  allowance
+)
+service coupon {
+	@doc "获取可用代金券V2"
+	@handler UsableAllowanceCouponV2
+	post /allowance/usable (UsableAllowanceCouponV2Req) returns (UsableAllowanceCouponV2Resp)
+
+	@doc "使用代金券"
+	@handler UseAllowanceCoupon
+	post /allowance/use (UseAllowanceCouponReq)
+
+	@doc "取消使用代金券"
+	@handler CancelAllowanceCoupon
+	post /allowance/cancel (CancelAllowanceCouponReq)
+
+	@doc "代金券列表"
+	@handler AllowanceList
+	get /allowance/list (AllowanceListReq) returns (AllowanceListResp)
+
+	@doc "领取代金券"
+	@handler ReceiveAllowance
+	post /allowance/receive (ReceiveAllowanceReq) returns (ReceiveAllowanceResp)
+}
+
+@server (
+	prefix: /api/coupon/v1
+	group:  coupon
+)
+service coupon {
+	@doc "用户观影券列表"
+	@handler UserCoupon
+	get /user/list (UserCouponReq) returns (UserCouponResp)
+
+	@doc "观影券分页列表"
+	@handler CouponPage
+	get /page (CouponPageReq) returns (CouponPageResp)
+
+	@doc "观影券数量"
+	@handler VideoCouponCount
+	get /video/count (VideoCouponCountReq) returns (VideoCouponCountResp)
+}
+

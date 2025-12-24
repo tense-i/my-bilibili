@@ -1,0 +1,19 @@
+Name: coupon.api
+Host: 0.0.0.0
+Port: 8085
+
+CouponRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:23790
+    Key: coupon.rpc
+
+Auth:
+  AccessSecret: "mybilibili-secret-key-2024"
+  AccessExpire: 86400
+
+Telemetry:
+  Name: coupon.api
+  Endpoint: http://127.0.0.1:14268/api/traces
+  Sampler: 1.0
+  Batcher: jaeger
